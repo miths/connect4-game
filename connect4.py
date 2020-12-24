@@ -4,38 +4,41 @@ import sys   # for what?
 import math
 import random
 
-blue = (117, 148, 124)
-black = (0, 0, 0)
-red = (255, 0, 0)
-yellow = (255, 255, 0)
+blue = (117, 148, 124)                  # light wood colour
+black = (0, 0, 0)                       # black colour
+red = (255, 0, 0)                       # red colour
+yellow = (255, 255, 0)                  # yellow colour
 
-rowCount = 6
-colCount = 7
+rowCount = 6                            # total number of rows
+colCount = 7                            # total number of column
 
-playerTurn = 0
-aiTurn = 1
+playerTurn = 0                          # player turn = 0
+aiTurn = 1                              # ai turn = 1
 
-empty = 0
-playerPiece = 1
-aiPiece = 2
+empty = 0                               # empty cell, represented by 0 in matrix
+playerPiece = 1                         # player Piece in a cell, represented by 1
+aiPiece = 2                             # ai piece in a cell, represented by 2
 
-windowLen = 4
+windowLen = 4                           # winning condition
 
 
-def create_board():
+def create_board():                     # create matrix with zeros
     board = np.zeros((rowCount, colCount))
     return board
 
 
+# drop piece on board and returns edited board
 def drop_piece(board, row, col, piece):
     board[row][col] = piece
     return board
 
 
+# checks if the location is valid or not
 def is_valid_loc(board, col):
     return board[rowCount-1][col] == 0
 
 
+# get next open row for given column
 def get_next_row(board, col):
     for row in range(rowCount):
         if board[row][col] == 0:
@@ -43,10 +46,12 @@ def get_next_row(board, col):
     return -1
 
 
+# to print board after flipping it
 def print_board(board):
     print(np.flip(board, 0))
 
 
+# check if last performed move was winning move or not
 def winning_move(board, piece, row, col):
     # checking for vertical
     r = row
@@ -126,13 +131,13 @@ def winning_move(board, piece, row, col):
     # pass
 
 
-def evaluate_window(window, piece):
+def evaluate_window(window, piece):                                 # to score the window
     score = 0
     opp_piece = playerPiece
     if piece == playerPiece:
         opp_piece = aiPiece
     if window.count(piece) == 4:
-        score += 100
+        score += 1000
     elif window.count(piece) == 3 and window.count(empty) == 1:
         score += 15
     elif window.count(piece) == 2 and window.count(empty) == 2:
@@ -143,7 +148,7 @@ def evaluate_window(window, piece):
     return score
 
 
-def score_pos(board, piece):
+def score_pos(board, piece):                                        # scores the board
     score = 0
 
     # score center column
@@ -156,7 +161,7 @@ def score_pos(board, piece):
         row_array = [int(i) for i in list(board[r, :])]
         for c in range(colCount-(windowLen-1)):
             window = row_array[c:c+windowLen]
-            score += evaluate_window(window, piece)+rowCount-r
+            score += evaluate_window(window, piece)
     # +ive diag score
     for r in range(rowCount - (windowLen-1)):
         for c in range(colCount - (windowLen-1)):
@@ -177,6 +182,7 @@ def score_pos(board, piece):
     return score
 
 
+# returns all possible columns to drop piece
 def get_valid_locations(board):
     valid_loc = []
     for col in range(colCount):
@@ -185,10 +191,12 @@ def get_valid_locations(board):
     return valid_loc
 
 
+# checks if any more moves are possible or not
 def is_terminal_node(board, row, col):
     return winning_move(board, playerPiece, row, col) or winning_move(board, aiPiece, row, col) or len(get_valid_locations(board)) == 0
 
 
+# returns best column after checking scores
 def pick_best_move(board, piece):
     valid_loc = get_valid_locations(board)
     best_score = -math.inf
@@ -204,6 +212,7 @@ def pick_best_move(board, piece):
     return best_col
 
 
+# minmax function to predict the future and choose move accordingly
 def minmax(board, depth, alpha, beta, maxPlayer, r, c):
     valid_loc = get_valid_locations(board)
     # print(valid_loc)
@@ -227,10 +236,10 @@ def minmax(board, depth, alpha, beta, maxPlayer, r, c):
         if (is_terminal):
             if winning_move(board, aiPiece, r, c):
                 # print_board(board)
-                return (None, 10000000000)
+                return (None, 10000000000+depth)
             elif winning_move(board, playerPiece, r, c):
-                print("danger!!!!!!!!")
-                return (None, -10000000000)
+                # print("danger!!!!!!!!")
+                return (None, -10000000000-depth)
             else:  # no valid moves, game over
                 return (None, 0)
 
@@ -305,7 +314,7 @@ def draw_board(board):
                     c*sqSize+sqSize/2), int(r * sqSize + sqSize+sqSize/2)), radius)
 
 
-board = create_board()
+board = create_board()                          # init. of game and game variable
 game_over = False
 # turn = 0
 turn = random.randint(playerTurn, aiTurn)
@@ -320,7 +329,7 @@ height = (rowCount+1) * sqSize
 
 size = (width, height)
 
-radius = int(sqSize/2 - 5)
+radius = int(sqSize/2 - 10)
 
 screen = pygame.display.set_mode(size)
 draw_board(board)
