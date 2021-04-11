@@ -1,1 +1,12 @@
 .vscode
+connect4_MCTS.py
+connect4_MCTS_1.py
+connect4_MCTS_2.py
+connect4_MCTS_3_h.py
+connect4_MCTS_4_sameTree.py
+connect4_MCTS_env.py
+connect4_minmax.py
+qlearning.py
+qlearning1.py
+connect4exe minmax/*
+connect4exe/*
