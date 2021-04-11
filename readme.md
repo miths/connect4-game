@@ -1,5 +1,3 @@
-https://drive.google.com/file/d/1NqTDTQ5DQlJgasY8fk7DsR99eECbZ5n5/view?usp=sharing
-
 # Connect 4 Game
 
 ## Player vs AI (playable game for windows)
